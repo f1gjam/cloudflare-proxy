@@ -78,6 +78,8 @@ def set_proxy(cf, zone_record_dict, set_flag):
                 duration = (current_time - start_time)
                 if count >= max_requests or duration.seconds >= 270:
                     countdown_time(300)
+                    count = 0  # reset count
+                    print('counter reset: ' + count)
                 else:
                     if set_flag == True:
                         # Enable proxy ONLY for records which have proxy DISABLED currently - if records have proxy
@@ -99,11 +101,11 @@ def set_proxy(cf, zone_record_dict, set_flag):
 
 
 def countdown_time(time_in_seconds):
-    print('Waiting for few minutes so that we don\'t hit the API Rate Limit')
+    # print('Waiting for few minutes so that we don\'t hit the API Rate Limit \n')
     while time_in_seconds:
         mins, secs = divmod(time_in_seconds, 60)
         timeformat = '{:02d}:{:02d}'.format(mins, secs)
-        print(timeformat, end='\r')
+        print(timeformat)
         time.sleep(1)
         time_in_seconds -= 1
     print('Finished!\n\n\n\n\n')
@@ -143,7 +145,7 @@ def reset_proxy(cf, zone_id, fqdn, record_values):
 def main():
     cf = connect()
     zone_record_dict = read_yaml_backup_file()
-    set_proxy(cf, zone_record_dict, False)
+    set_proxy(cf, zone_record_dict, True)
 
 
 if __name__ == '__main__':
