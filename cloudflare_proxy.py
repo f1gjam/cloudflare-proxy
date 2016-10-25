@@ -8,7 +8,8 @@ import time
 import glob, os
 
 # Global Variables
-max_requests = 900
+max_requests = 600
+api_sleep_time_in_seconds = 320
 
 
 def connect():
@@ -69,17 +70,18 @@ def set_proxy(cf, zone_record_dict, set_flag):
     total_records = sum([len(value) for key, value in zone_record_dict.iteritems()])
     count = 0
     for domain_zone in zone_record_dict:
-        for single_record in zone_record_dict[domain_zone]:
+        for single_domain in zone_record_dict[domain_zone]:
             count += 1
             start_time = datetime.datetime.now()
-            for fqdn, record_values in single_record.iteritems():
+            for fqdn, record_values in single_domain.iteritems():
                 print(count)
                 current_time = datetime.datetime.now()
                 duration = (current_time - start_time)
-                if count >= max_requests or duration.seconds >= 270:
-                    countdown_time(300)
+                if count >= max_requests or duration.seconds >= 240:
+                    countdown_time(api_sleep_time_in_seconds)
                     count = 0  # reset count
-                    print('counter reset: ' + count)
+                    start_time = datetime.datetime.now() #reset start_time
+                    print('counter/start_time reset')
                 else:
                     if set_flag == True:
                         # Enable proxy ONLY for records which have proxy DISABLED currently - if records have proxy
@@ -93,12 +95,13 @@ def set_proxy(cf, zone_record_dict, set_flag):
                     elif set_flag == False:
                         # Disable proxy ONLY for records who's backup configuration states it should be disabled
                         if record_values['proxiable'] == True and record_values['proxied'] == False:
-                            print('Reseting Proxy for: ' + fqdn + 'to original value: ' +
+                            print('Reseting Proxy for: ' + fqdn + ' to original value: ' +
                                   str(record_values['proxied']))
                             reset_proxy(cf, zone_info_dict[domain_zone], fqdn, record_values)
                         else:
                             print('Cannot enable Proxy for: ' + fqdn + ' not proxiable!')
 
+    print('Finished!!!')
 
 def countdown_time(time_in_seconds):
     # print('Waiting for few minutes so that we don\'t hit the API Rate Limit \n')
@@ -138,7 +141,6 @@ def reset_proxy(cf, zone_id, fqdn, record_values):
     }
 
     response = cf.zones.dns_records.put(zone_id, record_values['id'], data=dns_record)
-
     return response
 
 
