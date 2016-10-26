@@ -71,7 +71,7 @@ def set_proxy(cf, zone_record_dict, set_flag):
     zone_info_dict = get_zone_info(cf)
     total_records = sum([len(value)
                          for key, value in zone_record_dict.iteritems()])
-    print('Total records: ' + total_records)
+    print('Total records: ' + str(total_records))
     count = 0
     for domain_zone in zone_record_dict:
         for single_domain in zone_record_dict[domain_zone]:
