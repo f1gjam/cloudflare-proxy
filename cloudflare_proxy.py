@@ -8,7 +8,7 @@ import time
 import glob, os
 
 # Global Variables
-max_requests = 600
+max_requests = 800
 api_sleep_time_in_seconds = 320
 
 
@@ -101,7 +101,6 @@ def set_proxy(cf, zone_record_dict, set_flag):
                         else:
                             print('Cannot enable Proxy for: ' + fqdn + ' not proxiable!')
 
-    print('Finished!!!')
 
 def countdown_time(time_in_seconds):
     # print('Waiting for few minutes so that we don\'t hit the API Rate Limit \n')
@@ -111,7 +110,7 @@ def countdown_time(time_in_seconds):
         print(timeformat)
         time.sleep(1)
         time_in_seconds -= 1
-    print('Finished!\n\n\n\n\n')
+    print('Finished waiting for API limit cooldown timer!\n\n\n\n\n')
 
 
 def enable_proxy(cf, zone_id, fqdn, record_values):
@@ -148,6 +147,7 @@ def main():
     cf = connect()
     zone_record_dict = read_yaml_backup_file()
     set_proxy(cf, zone_record_dict, True)
+    print('Finished processing all records!!!')
 
 
 if __name__ == '__main__':
