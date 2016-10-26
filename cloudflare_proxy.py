@@ -5,7 +5,8 @@ import CloudFlare
 import yaml
 import datetime
 import time
-import glob, os
+import glob
+import os
 
 # Global Variables
 max_requests = 800
@@ -46,7 +47,8 @@ def read_yaml_backup_file():
         txt_filename = file
 
         re1 = '.*?'  # Non-greedy match on filler
-        re2 = '((?:[a-z][a-z\\.\\d_]+)\\.(?:[a-z\\d]{3}))(?![\\w\\.])'  # File Name 1
+        # File Name 1
+        re2 = '((?:[a-z][a-z\\.\\d_]+)\\.(?:[a-z\\d]{3}))(?![\\w\\.])'
 
         rg = re.compile(re1 + re2, re.IGNORECASE | re.DOTALL)
         m = rg.search(txt_filename)
@@ -67,7 +69,9 @@ def yaml_load_all(filename):
 
 def set_proxy(cf, zone_record_dict, set_flag):
     zone_info_dict = get_zone_info(cf)
-    total_records = sum([len(value) for key, value in zone_record_dict.iteritems()])
+    total_records = sum([len(value)
+                         for key, value in zone_record_dict.iteritems()])
+    print('Total records: ' + total_records)
     count = 0
     for domain_zone in zone_record_dict:
         for single_domain in zone_record_dict[domain_zone]:
@@ -80,26 +84,42 @@ def set_proxy(cf, zone_record_dict, set_flag):
                 if count >= max_requests or duration.seconds >= 240:
                     countdown_time(api_sleep_time_in_seconds)
                     count = 0  # reset count
-                    start_time = datetime.datetime.now() #reset start_time
+                    start_time = datetime.datetime.now()  # reset start_time
                     print('counter/start_time reset')
                 else:
-                    if set_flag == True:
+                    if set_flag:
                         # Enable proxy ONLY for records which have proxy DISABLED currently - if records have proxy
-                        # enabled already skip them (as per backup configuration being read
-                        if record_values['proxiable'] == True and record_values['proxied'] == False:
-                            print('Enabling Proxy for: ' + fqdn + ' current value: ' +
+                        # enabled already skip them (as per backup
+                        # configuration being read
+                        if record_values['proxiable'] and record_values[
+                                'proxied'] == False:
+                            print('Enabling Proxy for: ' +
+                                  fqdn +
+                                  ' current value: ' +
                                   str(record_values['proxied']))
-                            enable_proxy(cf, zone_info_dict[domain_zone], fqdn, record_values)
+                            enable_proxy(
+                                cf, zone_info_dict[domain_zone], fqdn, record_values)
                         else:
-                            print('Cannot enable Proxy for: ' + fqdn + ' not proxiable!')
+                            print(
+                                'Cannot enable Proxy for: ' +
+                                fqdn +
+                                ' not proxiable!')
                     elif set_flag == False:
-                        # Disable proxy ONLY for records who's backup configuration states it should be disabled
-                        if record_values['proxiable'] == True and record_values['proxied'] == False:
-                            print('Reseting Proxy for: ' + fqdn + ' to original value: ' +
+                        # Disable proxy ONLY for records who's backup
+                        # configuration states it should be disabled
+                        if record_values['proxiable'] and record_values[
+                                'proxied'] == False:
+                            print('Reseting Proxy for: ' +
+                                  fqdn +
+                                  ' to original value: ' +
                                   str(record_values['proxied']))
-                            reset_proxy(cf, zone_info_dict[domain_zone], fqdn, record_values)
+                            reset_proxy(
+                                cf, zone_info_dict[domain_zone], fqdn, record_values)
                         else:
-                            print('Cannot enable Proxy for: ' + fqdn + ' not proxiable!')
+                            print(
+                                'Cannot enable Proxy for: ' +
+                                fqdn +
+                                ' not proxiable!')
 
 
 def countdown_time(time_in_seconds):
@@ -124,7 +144,8 @@ def enable_proxy(cf, zone_id, fqdn, record_values):
         'ttl': record_values['ttl']
     }
 
-    response = cf.zones.dns_records.put(zone_id, record_values['id'], data=dns_record)
+    response = cf.zones.dns_records.put(
+        zone_id, record_values['id'], data=dns_record)
     return response
 
 
@@ -139,7 +160,8 @@ def reset_proxy(cf, zone_id, fqdn, record_values):
         'ttl': record_values['ttl']
     }
 
-    response = cf.zones.dns_records.put(zone_id, record_values['id'], data=dns_record)
+    response = cf.zones.dns_records.put(
+        zone_id, record_values['id'], data=dns_record)
     return response
 
 
