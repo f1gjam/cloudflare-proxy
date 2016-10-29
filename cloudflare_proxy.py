@@ -7,6 +7,7 @@ import datetime
 import time
 import glob
 import os
+import argparse
 
 # Global Variables
 max_requests = 800
@@ -92,7 +93,7 @@ def set_proxy(cf, zone_record_dict, set_flag):
                         # enabled already skip them (as per backup
                         # configuration being read
                         if record_values['proxiable'] and record_values[
-                                'proxied'] == False:
+                            'proxied'] == False:
                             print('Enabling Proxy for: ' +
                                   fqdn +
                                   ' current value: ' +
@@ -108,7 +109,7 @@ def set_proxy(cf, zone_record_dict, set_flag):
                         # Disable proxy ONLY for records who's backup
                         # configuration states it should be disabled
                         if record_values['proxiable'] and record_values[
-                                'proxied'] == False:
+                            'proxied'] == False:
                             print('Reseting Proxy for: ' +
                                   fqdn +
                                   ' to original value: ' +
@@ -165,10 +166,32 @@ def reset_proxy(cf, zone_id, fqdn, record_values):
     return response
 
 
+def cli_args():
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    group.add_argument('--enable', action='store_true', default=None,
+                       help='Sets Cloudflare Proxy to On for ALL records')
+    group.add_argument('--restore', action='store_false', default=None,
+                       help='Restores Cloudflare proxy settings to those in the backup file')
+    parser.parse_args()
+    args = parser.parse_args()
+
+    print(args)
+    if args.enable or args.restore != None:
+        cf = connect()
+        zone_record_dict = read_yaml_backup_file()
+
+        if args.enable == True:
+            set_proxy(cf, zone_record_dict, str(args.enable))
+        elif args.restore == False:
+            set_proxy(cf, zone_record_dict, str(args.restore))
+    else:
+        print(parser.print_help())
+
+
 def main():
-    cf = connect()
-    zone_record_dict = read_yaml_backup_file()
-    set_proxy(cf, zone_record_dict, True)
+    cli_args()
     print('Finished processing all records!!!')
 
 
