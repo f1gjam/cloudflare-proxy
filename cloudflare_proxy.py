@@ -184,10 +184,10 @@ def cli_args():
 
         if args.enable == True:
             print('Enabling Proxy')
-            set_proxy(cf, zone_record_dict, str(args.enable))
+            set_proxy(cf, zone_record_dict, args.enable)
         elif args.restore == False:
             print('Restoring Proxy settings')
-            set_proxy(cf, zone_record_dict, str(args.restore))
+            set_proxy(cf, zone_record_dict, args.restore)
     else:
         print(parser.print_help())
 
