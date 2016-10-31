@@ -183,8 +183,10 @@ def cli_args():
         zone_record_dict = read_yaml_backup_file()
 
         if args.enable == True:
+            print('Enabling Proxy')
             set_proxy(cf, zone_record_dict, str(args.enable))
         elif args.restore == False:
+            print('Restoring Proxy settings')
             set_proxy(cf, zone_record_dict, str(args.restore))
     else:
         print(parser.print_help())
