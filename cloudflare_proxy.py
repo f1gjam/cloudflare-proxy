@@ -88,7 +88,7 @@ def set_proxy(cf, zone_record_dict, set_flag):
                     start_time = datetime.datetime.now()  # reset start_time
                     print('counter/start_time reset')
                 else:
-                    if set_flag:
+                    if set_flag == True:
                         # Enable proxy ONLY for records which have proxy DISABLED currently - if records have proxy
                         # enabled already skip them (as per backup
                         # configuration being read
