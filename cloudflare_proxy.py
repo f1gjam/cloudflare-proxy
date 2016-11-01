@@ -89,27 +89,26 @@ def set_proxy(cf, zone_record_dict, set_flag):
                     print('counter/start_time reset')
                 else:
                     if set_flag == True:
-                        # Enable proxy ONLY for records which have proxy DISABLED currently - if records have proxy
+                        # Disable proxy ONLY for records which have proxy Enabled currently - if records have proxy
                         # enabled already skip them (as per backup
                         # configuration being read
                         if record_values['proxiable'] and record_values[
-                            'proxied'] == False:
-                            print('Enabling Proxy for: ' +
+                            'proxied'] == True:
+                            print('Disabling Proxy for: ' +
                                   fqdn +
                                   ' current value: ' +
                                   str(record_values['proxied']))
-                            enable_proxy(
+                            disable_proxy(
                                 cf, zone_info_dict[domain_zone], fqdn, record_values)
                         else:
                             print(
-                                'Cannot enable Proxy for: ' +
+                                'Cannot set Proxy for: ' +
                                 fqdn +
-                                ' not proxiable!')
+                                ' not proxiable! or already disabled')
                     elif set_flag == False:
                         # Disable proxy ONLY for records who's backup
                         # configuration states it should be disabled
-                        if record_values['proxiable'] and record_values[
-                            'proxied'] == False:
+                        if record_values['proxiable']:
                             print('Reseting Proxy for: ' +
                                   fqdn +
                                   ' to original value: ' +
@@ -118,7 +117,7 @@ def set_proxy(cf, zone_record_dict, set_flag):
                                 cf, zone_info_dict[domain_zone], fqdn, record_values)
                         else:
                             print(
-                                'Cannot enable Proxy for: ' +
+                                'Cannot set Proxy for: ' +
                                 fqdn +
                                 ' not proxiable!')
 
@@ -134,11 +133,11 @@ def countdown_time(time_in_seconds):
     print('Finished waiting for API limit cooldown timer!\n\n\n\n\n')
 
 
-def enable_proxy(cf, zone_id, fqdn, record_values):
+def disable_proxy(cf, zone_id, fqdn, record_values):
     dns_record = {
         'zone_id': zone_id,
         'id': record_values['id'],
-        'proxied': True,
+        'proxied': False,
         'type': record_values['type'],
         'name': fqdn,
         'content': record_values['content'],
@@ -170,21 +169,21 @@ def cli_args():
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
 
-    group.add_argument('--enable', action='store_true', default=None,
-                       help='Sets Cloudflare Proxy to On for ALL records')
+    group.add_argument('--disable', action='store_true', default=None,
+                       help='Sets Cloudflare Proxy to OFF/Diable for ALL records')
     group.add_argument('--restore', action='store_false', default=None,
                        help='Restores Cloudflare proxy settings to those in the backup file')
     parser.parse_args()
     args = parser.parse_args()
 
     print(args)
-    if args.enable or args.restore != None:
+    if args.disable or args.restore != None:
         cf = connect()
         zone_record_dict = read_yaml_backup_file()
 
-        if args.enable == True:
-            print('Enabling Proxy')
-            set_proxy(cf, zone_record_dict, args.enable)
+        if args.disable == True:
+            print('Disabing Proxy')
+            set_proxy(cf, zone_record_dict, args.disable)
         elif args.restore == False:
             print('Restoring Proxy settings')
             set_proxy(cf, zone_record_dict, args.restore)

@@ -1,6 +1,6 @@
 #Cloudflare-Proxy
 
-This Python script allows you to backup your Cloudflare configuration. This includes all Zones, DNS records and associated rules.
+This Python script allows you to disable or restore the proxy setting for ALL DNS records in Cloudflare
 
 
 **NOTE:** This script uses the [python-cloudflare](https://github.com/cloudflare/python-cloudflare).
@@ -39,12 +39,12 @@ certtoken = v1.0-...
 
 ##How to use
 
-To enable the proxy
-`python <path to script>/cloudflare_proxy.py --enable`
+To diable the proxy
+`python <path to script>/cloudflare_proxy.py --disable`
 
 To restore proxy settings from backup file
 `python <path to script>/cloudflare_proxy.py --restore`
 
-**NOTE** Both enabling and restoring require a backup to have been run and the backup files to be in /tmp
+**NOTE** Both disabling and restoring require a backup to have been run and the backup files to be in /tmp
 
-The script will read ALL dns zones and associated records and enable or restore the proxy setting
+The script will read ALL dns zones and associated records and disable or restore the proxy setting
