@@ -39,7 +39,7 @@ certtoken = v1.0-...
 
 ##How to use
 
-To diable the proxy
+To disable the proxy
 `python <path to script>/cloudflare_proxy.py --disable`
 
 To restore proxy settings from backup file
