@@ -1,5 +1,7 @@
 #Cloudflare-Proxy
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9e39121f67a2411a8d86792187375370)](https://www.codacy.com/app/kashif/cloudflare-proxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=f1gjam/cloudflare-proxy&amp;utm_campaign=Badge_Grade)
+
 This Python script allows you to disable or restore the proxy setting for ALL DNS records in Cloudflare
 
 
